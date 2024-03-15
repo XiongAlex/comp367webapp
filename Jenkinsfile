@@ -34,13 +34,13 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerHubLogin', usernameVariable: 'gxiong1', passwordVariable: 'comp367pass')]) {
                     bat 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
-                }
+                } 
             }
         }
 
         stage('Docker Push') {
             steps {
-                bat 'docker push myapp'
+                bat 'docker push gxiong1/comp367lab3'
             }
         }
     }
