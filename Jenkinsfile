@@ -5,14 +5,43 @@ pipeline {
         maven 'MAVEN3'
     }
 
-    stages {
-        stage('Build') {
+     stages {
+        stage('Checkout') {
             steps {
-                script {
-                    bat 'mvn clean install'
+                checkout scm
+            }
+        }
+
+        stage('Build Maven Project') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Code Coverage') {
+            steps {
+                bat 'mvn jacoco:report'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                bat 'docker build -t myapp .'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerHubLogin', usernameVariable: 'gxiong1', passwordVariable: 'comp367pass')]) {
+                    bat 'echo $PASSWORD | docker login -u $USERNAME --password-stdin'
                 }
             }
         }
-        // Add more stages as needed
+
+        stage('Docker Push') {
+            steps {
+                bat 'docker push myapp'
+            }
+        }
     }
 }
